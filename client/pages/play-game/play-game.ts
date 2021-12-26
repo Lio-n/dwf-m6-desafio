@@ -45,4 +45,4 @@ class Play extends HTMLElement {
     this.shadow.appendChild(h1);
   }
 }
-customElements.define("play-page", Play);
+customElements.define("play-game-page", Play);

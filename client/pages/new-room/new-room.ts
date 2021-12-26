@@ -17,11 +17,11 @@ class NewRoom extends HTMLElement {
       e.preventDefault();
       const { fullName } = e.target as any;
 
-      // ? Create User
+      // * Create User
       state.createUser(fullName.value).then(() => {
-        // ? Create Room
+        // * Create Room
         state.createRoom(fullName.value).then(() => {
-          // ? Set Online
+          // * Set Online
           state.setOnline(true);
           Router.go("/share_code");
         });

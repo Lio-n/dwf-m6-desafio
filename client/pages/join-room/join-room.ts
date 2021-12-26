@@ -17,13 +17,13 @@ class JoinRoom extends HTMLElement {
       e.preventDefault();
       const { roomId, fullName } = e.target as any;
 
-      // ? Create User
+      // * Create User
       state.createUser(fullName.value).then(() => {
-        // ? Check
+        // * Check
         state.checkRoomId(roomId.value).then(() => {
-          // ? Connect
+          // * Connect
           state.connectToRoom(() => {
-            // ? Set Online
+            // * Set Online
             state.setOnline(true);
             Router.go("/rules");
           });

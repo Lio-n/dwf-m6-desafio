@@ -13,7 +13,7 @@ const PORT = 3000;
 const roomsColl = firestore.collection("rooms");
 const usersColl = firestore.collection("users");
 
-// ! SIGNUP
+// $ SIGNUP
 app.post("/signup", (req, res) => {
   const { fullName } = req.body;
   usersColl
@@ -32,7 +32,7 @@ app.post("/signup", (req, res) => {
     });
 });
 
-// ! CREATE A ROOM
+// $ CREATE A ROOM
 app.post("/rooms", (req, res) => {
   const { fullName } = req.body;
 
@@ -55,7 +55,7 @@ app.post("/rooms", (req, res) => {
       },
     })
     .then(() => {
-      const roomLongId = roomRef.key; // ! Obtiene el ID que se genera en RTDB
+      const roomLongId = roomRef.key; // $ Obtiene el ID que se genera en RTDB
       const roomId = (1000 + Math.floor(Math.random() * 999)).toString();
       roomsColl
         .doc(roomId)
@@ -72,7 +72,7 @@ app.post("/rooms", (req, res) => {
     });
 });
 
-// ! UPDATE ONLINE
+// $ UPDATE ONLINE
 app.post("/updateOnline", (req, res) => {
   const { rtdbRoomId, player, onlineValue } = req.body;
 
@@ -80,17 +80,15 @@ app.post("/updateOnline", (req, res) => {
   res.json("Todo Ok");
 });
 
-// ! UPDATE READY
+// $ UPDATE READY
 app.post("/updateReady", (req, res) => {
   const { rtdbRoomId, player, readyValue } = req.body;
-
-  console.log("[SERVER] READEY UPDATE", rtdbRoomId, player, readyValue);
 
   rtdb.ref(`/rooms/${rtdbRoomId}/${player}`).update({ ready: readyValue });
   res.json("Todo Ok");
 });
 
-// ! Unirse una ROOM EXISTENTE
+// $ Unirse una ROOM EXISTENTE
 app.get("/checkId/:roomId", (req, res) => {
   const { roomId } = req.params;
   roomsColl
@@ -103,11 +101,10 @@ app.get("/checkId/:roomId", (req, res) => {
     });
 });
 
-// ! VERIFICA QUE PLAYER SOY [PLAYER1] or [PLAYER2]
+// $ VERIFICA QUE PLAYER SOY [PLAYER1] or [PLAYER2]
 app.post("/rooms/:rtdbRoomId", (req, res) => {
   const { rtdbRoomId } = req.params;
-  const { fullName } = req.body;
-  const { roomId } = req.body;
+  const { fullName, roomId } = req.body;
   roomsColl
     .doc(roomId.toString())
     .get()
@@ -123,7 +120,7 @@ app.post("/rooms/:rtdbRoomId", (req, res) => {
     });
 });
 
-// ! OBTENER LA INFO ACTUAL DEL PLAYER
+// $ OBTENER LA INFO ACTUAL DEL PLAYER
 app.post("/rooms/rival_info/:rtdbRoomId", (req, res) => {
   const { rtdbRoomId } = req.params;
   const { player } = req.body;

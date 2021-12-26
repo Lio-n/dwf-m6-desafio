@@ -9,7 +9,7 @@ import "./pages/join-room/join-room";
 import "./pages/new-room/new-room";
 import "./pages/share-code/share-code";
 import "./pages/rules/rules";
-import "./pages/play/play";
+import "./pages/play-game/play-game";
 import "./pages/wait/wait";
 
 // ? SOMETHING ELSE

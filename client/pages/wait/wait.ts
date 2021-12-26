@@ -10,22 +10,10 @@ class WaitPage extends HTMLElement {
     this.rivalName = state.getState().rivalName;
   }
   connectedCallback() {
-    // ? READY
-    console.log("READYEEADY");
-
-    state.listenReady();
-
-    state.subscribe(() => {
-      const { ready } = state.getState();
-      console.log("🚀 ~ state.subscribe ~ ready", ready);
-
-      if (ready == true) {
-        console.log("TRUEEEEE");
-        Router.go("/play");
-      }
-    });
-
     this.render();
+    // * Varifica si ambos jugadores tiene 'ready:true'.
+    // * Si, es así los redirige a '/play_game'
+    state.listenReady();
   }
   render() {
     const style = document.createElement("style");

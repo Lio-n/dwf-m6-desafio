@@ -8,7 +8,9 @@ class RulesPage extends HTMLElement {
     this.shadow = this.attachShadow({ mode: "open" });
   }
   connectedCallback() {
-    // ? Get Rival Info
+    // $ Seteo 'Online:false', así no tengo problemas con el listenOnline
+    // $ El cual siempre se que "escuchando" cada actualizacion en la 'Real Time Data Base'.
+    state.setOnline(false);
     state.getRivalInfo(() => {
       this.render();
     });
@@ -16,7 +18,6 @@ class RulesPage extends HTMLElement {
   addListener() {
     const rulesBtn = this.shadow.querySelector(".info__ready-btn");
     rulesBtn.addEventListener("click", () => {
-      // ? Set Ready
       state.setReady(true);
       Router.go("/wait");
     });

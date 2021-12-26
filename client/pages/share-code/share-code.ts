@@ -9,10 +9,8 @@ export class ShareCode extends HTMLElement {
   }
   connectedCallback() {
     this.roomId = state.getState().roomId;
-    // ? ONLINE
-    state.listenOnline();
-
     this.render();
+    state.listenOnline();
   }
   render() {
     this.shadow.innerHTML = `
