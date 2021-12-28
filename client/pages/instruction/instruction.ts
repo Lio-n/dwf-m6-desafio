@@ -1,15 +1,15 @@
 import { Router } from "@vaadin/router";
 import { state } from "../../state";
 
-class RulesPage extends HTMLElement {
+class Instruction extends HTMLElement {
   shadow: ShadowRoot;
   constructor() {
     super();
     this.shadow = this.attachShadow({ mode: "open" });
   }
   connectedCallback() {
-    // $ Seteo 'Online:false', así no tengo problemas con el listenOnline
-    // $ El cual siempre se que "escuchando" cada actualizacion en la 'Real Time Data Base'.
+    // * Seteo 'online:false', así no tengo problemas con el listenOnline
+    // * El cual siempre se que "escuchando" cada actualizacion en la 'Real Time Database'.
     state.setOnline(false);
     state.getRivalInfo(() => {
       this.render();
@@ -56,4 +56,4 @@ class RulesPage extends HTMLElement {
     this.shadow.appendChild(style);
   }
 }
-customElements.define("rules-page", RulesPage);
+customElements.define("instruction-page", Instruction);

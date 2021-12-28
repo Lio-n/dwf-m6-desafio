@@ -43,14 +43,14 @@ app.post("/rooms", (req, res) => {
         fullName,
         online: false,
         ready: false,
-        choice: "undefined",
+        choice: "",
         score: 0,
       },
       player2: {
-        fullName: "undefined",
+        fullName: "",
         online: false,
         ready: false,
-        choice: "undefined",
+        choice: "",
         score: 0,
       },
     })
@@ -134,6 +134,26 @@ app.post("/rooms/rival_info/:rtdbRoomId", (req, res) => {
       score: player == "player1" ? player1.score : player2.score,
     });
   });
+});
+
+// $ GUARDO EL MOVE EN LA REALTIME DATABASE
+app.post("/rooms/:rtdbRoomId/set_move", (req, res) => {
+  const { rtdbRoomId } = req.params;
+  const { player, myPlay } = req.body;
+
+  rtdb.ref(`/rooms/${rtdbRoomId}/${player}`).update({ choice: myPlay });
+
+  res.json("Todo Ok");
+});
+
+// ! GUARDO EL SCORE EN LA REALTIME DATABASE
+app.post("/rooms/:rtdbRoomId/set_score", (req, res) => {
+  const { rtdbRoomId } = req.params;
+  const { myScore, player } = req.body;
+
+  rtdb.ref(`/rooms/${rtdbRoomId}/${player}`).update({ score: myScore });
+
+  res.json("Todo Ok");
 });
 
 app.listen(PORT, () => {

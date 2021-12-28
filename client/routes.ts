@@ -6,7 +6,8 @@ router.setRoutes([
   { path: "/join_room", component: "join-room-page" },
   { path: "/new_room", component: "new-room-page" },
   { path: "/share_code", component: "share-code-page" },
-  { path: "/rules", component: "rules-page" },
+  { path: "/instruction", component: "instruction-page" },
   { path: "/wait", component: "wait-page" },
   { path: "/play_game", component: "play-game-page" },
+  { path: "/results", component: "results-page" },
 ]);

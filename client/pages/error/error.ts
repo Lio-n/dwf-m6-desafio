@@ -1,7 +1,7 @@
 import { Router } from "@vaadin/router";
 import { state } from "../../state";
 
-class JoinRoom extends HTMLElement {
+class Error extends HTMLElement {
   shadow: ShadowRoot;
   constructor() {
     super();
@@ -15,26 +15,15 @@ class JoinRoom extends HTMLElement {
 
     formEl.addEventListener("submit", (e) => {
       e.preventDefault();
-      const { roomId, fullName } = e.target as any;
-
-      // * Create User
-      state.createUser(fullName.value).then(() => {
-        // * Check
-        state.checkRoomId(roomId.value).then(() => {
-          // * Connect
-          state.connectToRoom(() => {
-            // * Set Online
-            state.setOnline(true);
-            Router.go("/instruction");
-          });
-        });
-      });
+      state.setReady(false);
+      Router.go("/rules");
     });
   }
   render() {
     const style = document.createElement("style");
     style.innerHTML = `*{margin:0;padding:0;box-sizing: border-box;}
-    .joinRoom {
+    body{background: linear-gradient(to bottom, hsl(310, 47%, 23%), rgb(57, 20, 54));}
+    .newRoom {
       padding: 1.5rem 1.5rem 0 1.5rem;
       width: min-content;
       display: flex;
@@ -42,16 +31,16 @@ class JoinRoom extends HTMLElement {
       justify-content: space-between;
       height: 100vh;
     }
-    .joinRoom__title {
+    .newRoom__title {
       font-size: 3rem;
       line-height: 6rem;
       margin-bottom: 1.5rem;
       color: var(--title);
     }
-    .joinRoom__title span {
+    .newRoom__title span {
       color: #91ccaf;
     }
-    .joinRoom__cont-hand{
+    .newRoom__cont-hand{
         display: flex;
         justify-content: space-between;
         margin-top: 1rem;
@@ -80,36 +69,18 @@ class JoinRoom extends HTMLElement {
       color: #D8FCFC;
       background-color: #006CFC;
       border: 5px solid #001997;
-    }
-    /* INPUT */
-    .form__input {
-      /* box model */
-      border-radius: 10px;
-      padding: 10px 10px 10px 20px;
-      width: 20rem;
-      /* typography */
-      letter-spacing: 1px;
-      font-size: 2rem;
-      font-family: "Barlow Semi Condensed", sans-serif;
-      /* visual */
-      border: none;
-      color: #666;
     }`;
 
     this.shadow.innerHTML = `
-    <div class="joinRoom">
-      <h1 class="joinRoom__title">Piedra Papel <span>ó</span> Tijera</h1>
+    <div class="newRoom">
+      <h1 class="newRoom__title">Piedra Papel <span>ó</span> Tijera</h1>
+      
       <form class="form">
-
-        <h2 class="form__subtitle">Tu Nombre</h2>
-        <input class="form__input" name="fullName" placeholder="Ingresar Nombre"/>
-
-        <h2 class="form__subtitle">Codigo de la Room</h2>
-        <input class="form__input" name="roomId" placeholder="Ingresar Codigo"/>
-
-        <button class="form__btn">Entrar</button>
+        <h2 class="form__subtitle">Ups, esta sala está completa y tu nombre no coincide con nadie en la sala.</h2>
+        <button class="form__btn">Volver a Intentar</button>
       </form>
-      <div class="joinRoom__cont-hand">
+      
+      <div class="newRoom__cont-hand">
         <my-hand tag="scissors"></my-hand>
         <my-hand tag="rock"></my-hand>
         <my-hand tag="paper"></my-hand>
@@ -122,4 +93,4 @@ class JoinRoom extends HTMLElement {
   }
 }
 
-customElements.define("join-room-page", JoinRoom);
+customElements.define("error-page", Error);

@@ -8,9 +8,10 @@ import "./pages/home/home";
 import "./pages/join-room/join-room";
 import "./pages/new-room/new-room";
 import "./pages/share-code/share-code";
-import "./pages/rules/rules";
-import "./pages/play-game/play-game";
+import "./pages/instruction/instruction";
 import "./pages/wait/wait";
+import "./pages/play-game/play-game";
+import "./pages/results/results";
 
 // ? SOMETHING ELSE
 import "./routes";
