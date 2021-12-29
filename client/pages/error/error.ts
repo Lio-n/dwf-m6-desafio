@@ -15,7 +15,6 @@ class Error extends HTMLElement {
 
     formEl.addEventListener("submit", (e) => {
       e.preventDefault();
-      state.setReady(false);
       Router.go("/rules");
     });
   }

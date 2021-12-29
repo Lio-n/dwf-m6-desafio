@@ -3,12 +3,15 @@ import { rtdb } from "./rtdb";
 
 const API_BASE_URL = "http://localhost:3000";
 let i = 0;
+
+type Property = "online" | "ready";
 type Move = "rock" | "paper" | "scissors";
 type Result = "Draw" | "Win" | "Lose";
 type Game = {
   myScore: Number;
   rivalScore: Number;
 };
+
 const state = {
   data: {
     fullName: "",
@@ -77,9 +80,9 @@ const state = {
       });
   },
 
-  // # CHECKEA EL ROOM ID [RTDBROOMID]
+  // # CHECK THE ROOM ID [RTDBROOMID]
   checkRoomId(roomId: string) {
-    return fetch(`${API_BASE_URL}/checkId/${roomId}`)
+    return fetch(`${API_BASE_URL}/rooms/${roomId}`)
       .then((res) => res.json())
       .then((data) => {
         const { rtdbRoomId } = data;
@@ -91,101 +94,63 @@ const state = {
       });
   },
 
-  // # VERIFICA SI AMBOS JUGADORES TIENEN ONLINE:TRUE
-  listenOnline() {
+  // # CHECK IF BOTH PLAYERS HAVE READY:TRUE OR ONLINE:TRUE
+  listenProperty(property: Property) {
     const { rtdbRoomId } = this.getState();
 
     rtdb.ref(`/rooms/${rtdbRoomId}`).on("value", (snap) => {
       const { player1, player2 } = snap.val();
-      console.log("LISTENER ONLINE", snap.val());
+      console.log("LISTENER PROPERTY", snap.val());
 
-      if (player1.online && player2.online) {
+      if (property.includes("online") && player1.online && player2.online) {
         Router.go("/instruction");
       }
-    });
-  },
-
-  // # CAMBIA EL VALOR EN ONLINE
-  setOnline(onlineValue: boolean) {
-    const { rtdbRoomId, player } = this.getState();
-    fetch(`${API_BASE_URL}/updateOnline`, {
-      method: "post",
-      headers: {
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({
-        player,
-        rtdbRoomId,
-        onlineValue,
-      }),
-    });
-  },
-
-  // # VERIFICA SI AMBOS JUGADORES TIENE READY:TRUE
-  listenReady() {
-    const { rtdbRoomId } = this.getState();
-
-    rtdb.ref(`/rooms/${rtdbRoomId}`).on("value", (snap) => {
-      const { player1, player2 } = snap.val();
-      console.log("LISTENER READY", snap.val());
-
-      if (player1.ready && player2.ready) {
+      if (property.includes("ready") && player1.ready && player2.ready) {
         Router.go("/play_game");
       }
     });
   },
 
-  // # CAMBIA EL VALOR EN READY
-  setReady(readyValue: boolean) {
+  // # UPDATE PROPERTY [READY or ONLINE]
+  updateProperty(property: Property, value: boolean) {
     const { rtdbRoomId, player } = this.getState();
-    fetch(`${API_BASE_URL}/updateReady`, {
-      method: "post",
+
+    fetch(`${API_BASE_URL}/rooms/${rtdbRoomId}/player`, {
+      method: "put",
       headers: {
         "content-type": "application/json",
       },
       body: JSON.stringify({
         player,
-        rtdbRoomId,
-        readyValue,
+        property,
+        value,
       }),
     });
   },
 
-  // # VERIFICO QUE PLAYER SOY [PLAYER1] or [PLAYER2]
-  connectToRoom(callback?) {
-    const { rtdbRoomId, fullName, roomId } = this.getState();
-    return fetch(`${API_BASE_URL}/rooms/${rtdbRoomId}`, {
-      method: "post",
+  // # UPDATE THE PLAYER2 FULLNAME
+  updateRivalFullName(callback?) {
+    const { rtdbRoomId, fullName } = this.getState();
+    this.setState({ ...this.getState(), player: "player2" });
+
+    fetch(`${API_BASE_URL}/rooms/${rtdbRoomId}/player2/?fullName=${fullName}`, {
+      method: "put",
       headers: {
         "content-type": "application/json",
       },
-      body: JSON.stringify({
-        fullName,
-        roomId,
-      }),
-    })
-      .then((res) => {
-        return res.json();
-      })
-      .then((data) => {
-        const { player } = data;
-        this.setState({ ...this.getState(), player });
-        callback();
-      });
+    });
+    callback();
   },
 
-  // # OBTENGO LA INFO DEL RIVAL
+  // # GET CURRENT RIVAL INFO
   getRivalInfo(callback?) {
     const { rtdbRoomId, player } = this.getState();
 
-    return fetch(`${API_BASE_URL}/rooms/rival_info/${rtdbRoomId}`, {
-      method: "post",
+    return fetch(`${API_BASE_URL}/rooms/${rtdbRoomId}/rival_player/?player=${player}`, {
+      method: "get",
       headers: {
         "content-type": "application/json",
       },
-      body: JSON.stringify({
-        player,
-      }),
     })
       .then((res) => {
         return res.json();
@@ -198,25 +163,13 @@ const state = {
       });
   },
 
-  // # OBTENGO EL MOVE DEL RIVAL
-  getRivalMove() {
-    const { rtdbRoomId, player } = this.getState();
-    const rivalPlayer = player == "player1" ? "player2" : "player1";
-
-    rtdb.ref(`/rooms/${rtdbRoomId}/${rivalPlayer}`).on("value", (snap) => {
-      const { choice } = snap.val();
-
-      this.setState({ ...this.getState(), rivalChoice: choice });
-    });
-  },
-
-  // # GUARDO EL MOVE EN LA REALTIME DATABASE
+  // # SAVE THE CHOICE IN THE REAL TIME DATABASE
   setMove(myPlay: Move) {
     const { player, rtdbRoomId } = this.getState();
     this.setState({ ...this.getState(), choice: myPlay });
 
-    return fetch(`${API_BASE_URL}/rooms/${rtdbRoomId}/set_move`, {
-      method: "post",
+    return fetch(`${API_BASE_URL}/rooms/${rtdbRoomId}/player/choice`, {
+      method: "put",
       headers: {
         "content-type": "application/json",
       },
@@ -227,9 +180,21 @@ const state = {
     });
   },
 
+  // # GET RIVAL CHOICE
+  getRivalChoice() {
+    const { rtdbRoomId, player } = this.getState();
+    const rivalPlayer: string = player.includes("player1") ? "player2" : "player1";
+
+    rtdb.ref(`/rooms/${rtdbRoomId}/${rivalPlayer}`).on("value", (snap) => {
+      const { choice } = snap.val();
+
+      this.setState({ ...this.getState(), rivalChoice: choice });
+    });
+  },
+
   // # Scissors > Paper > Rock > Scissors
   // # How to determine who won?
-  whoWin(myPlay: Move, rivalPlay: Move) {
+  whoWon(myPlay: Move, rivalPlay: Move) {
     let result = "Draw";
     if (myPlay == rivalPlay) {
       this.pushToHistory({ myScore: 0, rivalScore: 0 });
@@ -239,7 +204,7 @@ const state = {
     const winPaper = myPlay == "paper" && rivalPlay == "rock";
     const winRock = myPlay == "rock" && rivalPlay == "scissors";
 
-    // If this returns False, the Rival wins
+    // # If this returns False, the Rival wins
     result = [winScissors, winPaper, winRock].includes(true) ? "Win" : "Lose";
 
     result == "Win"
@@ -248,7 +213,7 @@ const state = {
     return result;
   },
 
-  // # STORE THE SCORE ON REALTIME DATABASE AND HISTORY
+  // # STORE THE SCORE AND HISTORY, IN THE REALTIME DATABASE
   pushToHistory(score: Game, result?: Result) {
     const { myScore, rivalScore } = score;
     const { history, rtdbRoomId, player } = this.getState();
@@ -256,19 +221,19 @@ const state = {
     history.myScore += myScore;
     history.rivalScore += rivalScore;
     this.setState({ ...this.getState(), history });
-    // $ Al ganador se le suma puntos, y se envia el score a la rtdb.
-    // $ Junto con player, el cual verifica que jugador soy [player1 ó player2].
+    // $ Points are added to the winner, and the score is sent to the rtdb.
+    // $ Together with player, which verifies which player won [player1 or player2].
     if (result == "Win") {
       const { myScore } = history;
 
-      fetch(`${API_BASE_URL}/rooms/${rtdbRoomId}/set_score`, {
-        method: "post",
+      fetch(`${API_BASE_URL}/rooms/${rtdbRoomId}/player/score`, {
+        method: "put",
         headers: {
           "content-type": "application/json",
         },
         body: JSON.stringify({
-          myScore,
           player,
+          myScore,
         }),
       });
     }

@@ -12,7 +12,7 @@ class WaitPage extends HTMLElement {
     this.render();
     // * Varifica si ambos jugadores tiene 'ready:true'.
     // * Si, es así los redirige a '/play_game'
-    state.listenReady();
+    state.listenProperty("ready");
   }
   render() {
     const style = document.createElement("style");

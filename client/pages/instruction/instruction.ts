@@ -10,7 +10,7 @@ class Instruction extends HTMLElement {
   connectedCallback() {
     // * Seteo 'online:false', así no tengo problemas con el listenOnline
     // * El cual siempre se que "escuchando" cada actualizacion en la 'Real Time Database'.
-    state.setOnline(false);
+    state.updateProperty("online", false);
     state.getRivalInfo(() => {
       this.render();
     });
@@ -18,7 +18,7 @@ class Instruction extends HTMLElement {
   addListener() {
     const rulesBtn = this.shadow.querySelector(".info__ready-btn");
     rulesBtn.addEventListener("click", () => {
-      state.setReady(true);
+      state.updateProperty("ready", true);
       Router.go("/wait");
     });
   }

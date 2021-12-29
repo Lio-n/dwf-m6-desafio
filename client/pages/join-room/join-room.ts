@@ -22,9 +22,9 @@ class JoinRoom extends HTMLElement {
         // * Check
         state.checkRoomId(roomId.value).then(() => {
           // * Connect
-          state.connectToRoom(() => {
+          state.updateRivalFullName(() => {
             // * Set Online
-            state.setOnline(true);
+            state.updateProperty("online", true);
             Router.go("/instruction");
           });
         });

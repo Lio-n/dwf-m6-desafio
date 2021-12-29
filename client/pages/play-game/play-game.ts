@@ -19,14 +19,13 @@ class Play extends HTMLElement {
     for (const choice of myMove) {
       choice.addEventListener("change", (e: any) => {
         const myPlay = e.detail.myPlay as Move;
-        state.setMove(myPlay).then(() => {
-          this.getMoves();
-        });
+        state.setMove(myPlay);
+        this.getMoves();
       });
     }
   }
   getMoves() {
-    state.getRivalMove();
+    state.getRivalChoice();
 
     state.subscribe(() => {
       const { choice, rivalChoice } = state.getState();
@@ -36,7 +35,7 @@ class Play extends HTMLElement {
     });
   }
   render() {
-    let count = 8;
+    let count = 3;
 
     const style = document.createElement("style");
     style.innerHTML = `
@@ -62,31 +61,33 @@ class Play extends HTMLElement {
         <my-hand tag="paper"></my-hand>
       </div>`;
 
+    this.addListener();
+
     const countDown = this.shadow.querySelector(".playGame__countdown");
 
-    countDown.textContent = "9";
+    countDown.textContent = "3";
     // & Set time 3s
     const intervalId = setInterval(() => {
       countDown.textContent = `${count}`;
 
-      count--;
       // & If I don't select any of the three options.
       // & It stops counting and redirects to "/instruction".
       if (count < 0 && !this.isSelected) {
         clearInterval(intervalId);
-        state.setReady(false);
+        state.updateProperty("ready", false);
         Router.go("/instruction");
       }
       // & If I select any of the Three Options
       // & It stops counting and redirects to "/results".
       if (this.isSelected) {
         clearInterval(intervalId);
-        state.setReady(false);
+        state.updateProperty("ready", false);
         Router.go("/results");
       }
+
+      count--;
     }, 1000);
 
-    this.addListener();
     this.shadow.appendChild(style);
   }
 }

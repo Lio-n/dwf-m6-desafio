@@ -10,7 +10,7 @@ class Results extends HTMLElement {
   }
   connectedCallback() {
     const { choice, rivalChoice } = state.getState();
-    this.result = state.whoWin(choice, rivalChoice);
+    this.result = state.whoWon(choice, rivalChoice);
     this.render();
   }
   addListener() {
@@ -20,7 +20,7 @@ class Results extends HTMLElement {
       e.preventDefault();
       // * Seteo 'ready:false', así no tengo problemas con el listenOnline
       // * El cual siempre se que "escuchando" cada actualizacion en la 'Real Time Database'.
-      state.setReady(false);
+      state.updateProperty("ready", false);
       Router.go("/instruction");
     });
   }

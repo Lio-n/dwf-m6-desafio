@@ -22,7 +22,7 @@ class NewRoom extends HTMLElement {
         // * Create Room
         state.createRoom(fullName.value).then(() => {
           // * Set Online
-          state.setOnline(true);
+          state.updateProperty("online", true);
           Router.go("/share_code");
         });
       });

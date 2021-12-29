@@ -72,24 +72,8 @@ app.post("/rooms", (req, res) => {
     });
 });
 
-// $ UPDATE ONLINE
-app.post("/updateOnline", (req, res) => {
-  const { rtdbRoomId, player, onlineValue } = req.body;
-
-  rtdb.ref(`/rooms/${rtdbRoomId}/${player}`).update({ online: onlineValue });
-  res.json("Todo Ok");
-});
-
-// $ UPDATE READY
-app.post("/updateReady", (req, res) => {
-  const { rtdbRoomId, player, readyValue } = req.body;
-
-  rtdb.ref(`/rooms/${rtdbRoomId}/${player}`).update({ ready: readyValue });
-  res.json("Todo Ok");
-});
-
-// $ Unirse una ROOM EXISTENTE
-app.get("/checkId/:roomId", (req, res) => {
+// $ CHECKS IF A ROOM EXISTS
+app.get("/rooms/:roomId", (req, res) => {
   const { roomId } = req.params;
   roomsColl
     .doc(roomId.toString())
@@ -101,29 +85,36 @@ app.get("/checkId/:roomId", (req, res) => {
     });
 });
 
-// $ VERIFICA QUE PLAYER SOY [PLAYER1] or [PLAYER2]
-app.post("/rooms/:rtdbRoomId", (req, res) => {
+// $ UPDATE THE PLAYER2 FULLNAME
+// & Path : "/rooms/:rtdbRoomId/player2/?fullName=${fullName}"
+app.put("/rooms/:rtdbRoomId/player2", (req, res) => {
   const { rtdbRoomId } = req.params;
-  const { fullName, roomId } = req.body;
-  roomsColl
-    .doc(roomId.toString())
-    .get()
-    .then((doc) => {
-      const { player1 } = doc.data();
-      if (player1 == fullName) {
-        rtdb.ref(`/rooms/${rtdbRoomId}/player1`).update({ fullName });
-        res.json({ player: "player1" });
-      } else {
-        rtdb.ref(`/rooms/${rtdbRoomId}/player2`).update({ fullName });
-        res.json({ player: "player2" });
-      }
-    });
+  const { fullName } = req.query;
+
+  rtdb.ref(`/rooms/${rtdbRoomId}/player2`).update({ fullName });
+  res.json({ player: "player2" });
 });
 
-// $ OBTENER LA INFO ACTUAL DEL PLAYER
-app.post("/rooms/rival_info/:rtdbRoomId", (req, res) => {
+// $ UPDATE PROPERTY [READY or ONLINE]
+// & Path : "/rooms/${rtdbRoomId}/player"
+app.put("/rooms/:rtdbRoomId/player", (req, res) => {
   const { rtdbRoomId } = req.params;
-  const { player } = req.body;
+  const { player, property, value } = req.body;
+
+  if (property == "online") {
+    rtdb.ref(`/rooms/${rtdbRoomId}/${player}`).update({ online: value });
+  }
+  if (property == "ready") {
+    rtdb.ref(`/rooms/${rtdbRoomId}/${player}`).update({ ready: value });
+  }
+  res.json("Todo Ok");
+});
+
+// $ GET CURRENT RIVAL INFO
+// & Path : "/rooms/${rtdbRoomId}/rival_player/?player=${player}"
+app.get("/rooms/:rtdbRoomId/rival_player", (req, res) => {
+  const { rtdbRoomId } = req.params;
+  const { player } = req.query;
 
   rtdb.ref(`/rooms/${rtdbRoomId}`).once("value", (snap) => {
     const { player1, player2 } = snap.val();
@@ -136,8 +127,9 @@ app.post("/rooms/rival_info/:rtdbRoomId", (req, res) => {
   });
 });
 
-// $ GUARDO EL MOVE EN LA REALTIME DATABASE
-app.post("/rooms/:rtdbRoomId/set_move", (req, res) => {
+// $ SAVE THE CHOICE IN THE REAL TIME DATABASE
+// & Path : "/rooms/${rtdbRoomId}/player/choice"
+app.put("/rooms/:rtdbRoomId/player/choice", (req, res) => {
   const { rtdbRoomId } = req.params;
   const { player, myPlay } = req.body;
 
@@ -146,10 +138,11 @@ app.post("/rooms/:rtdbRoomId/set_move", (req, res) => {
   res.json("Todo Ok");
 });
 
-// ! GUARDO EL SCORE EN LA REALTIME DATABASE
-app.post("/rooms/:rtdbRoomId/set_score", (req, res) => {
+// $ SAVE THE SCORE IN THE REAL TIME DATABASE
+// & Path : "/rooms/${rtdbRoomId}/player/myScore"
+app.put("/rooms/:rtdbRoomId/player/score", (req, res) => {
   const { rtdbRoomId } = req.params;
-  const { myScore, player } = req.body;
+  const { player, myScore } = req.body;
 
   rtdb.ref(`/rooms/${rtdbRoomId}/${player}`).update({ score: myScore });
 
