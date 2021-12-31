@@ -17,9 +17,34 @@ class WaitPage extends HTMLElement {
   render() {
     const style = document.createElement("style");
 
-    style.innerHTML = `
+    style.innerHTML = `*{margin:0;padding:0;box-sizing: border-box;}
+    .wait {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      height: 100vh;
+      padding: 2.2rem 1.2rem 0 1.2rem;
+    }
     .wait__cont-text {
-      margin: 2rem 0;
+      text-align: center;
+      margin-bottom: 6.4rem;
+    }
+    .wait__cont-hand {
+      /* box model */
+      display: flex;
+      justify-content: space-between;
+      margin-top: 1rem;
+      width: 320px;
+    }
+    .wait__cont-text h2 {
+      font-weight: 300;
+      font-size: 2rem;
+      font-family: var(--font-rubik);
+    }
+    .wait__rivalFullName {
+      font-weight: 600;
+      color: #006CFC;
     }`;
 
     this.shadow.innerHTML = `
@@ -30,11 +55,11 @@ class WaitPage extends HTMLElement {
       <div class="wait__cont-info">
         <div class="wait__cont-text">
             <h2>Esperando a que</h2>
-            <h1 class="code">${this.rivalName}</h1>
+            <h2 class="wait__rivalFullName">${this.rivalName}</h2>
             <h2>presione ¡Jugar!...</h2>
         </div>
   
-        <div class="info__hand">
+        <div class="wait__cont-hand">
           <my-hand tag="scissors"></my-hand>
           <my-hand tag="rock"></my-hand>
           <my-hand tag="paper"></my-hand>
@@ -43,7 +68,7 @@ class WaitPage extends HTMLElement {
 
     </div>`;
 
-    this.appendChild(style);
+    this.shadow.appendChild(style);
   }
 }
 customElements.define("wait-page", WaitPage);

@@ -3,11 +3,23 @@
 ## Solo tengo que :
 
 - Mejorar el HTML y CSS, de cada /page.
-- Hacer un mejor uso de REST (HECHO).
-  - Tener cuidado con esto porque, podría tener problemas a la hora de hacer requests (fetch).
-- Verificar que Components necesito.
+
+  - Añadir la imagen del background, al finalizar todo.
+  - Añadir en CSS
+    - box model
+    - visual
+    - typography
+    - positioning
+
+- Añadir algo de seguridad. => /error page
+  - Re llenar los input antes de continuar.
+    - Solo añadir un advertencia en esto.
+  - Si ya hay dos personas conectadas a la sala.
+  - Si tu nombre no coincide con alguno de los previamente registrados.
+  - Si una de las personas cierra la pestaña, notificar a la otra persona.
 
 ## REVISAR
 
-- state.connectToRoom() (HECHO) => updateRivalFullName()
-  - Creo que lo puedo optimizar, este solo devuelve player="player2", en /join-room.
+- Inputs Warning
+  - https://github.com/Lio-n/FM-base-apparel-page-challenge
+  - https://github.com/Lio-n/dwf-m6-rooms

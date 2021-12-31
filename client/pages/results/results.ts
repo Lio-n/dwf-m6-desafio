@@ -1,20 +1,30 @@
 import { Router } from "@vaadin/router";
 import { state } from "../../state";
 
+const winSvg = require("url:../../../assets/images/win.svg");
+const loseSvg = require("url:../../../assets/images/lose.svg");
+const drawSvg = require("url:../../../assets/images/draw.svg");
+type Move = "rock" | "paper" | "scissors";
+
 class Results extends HTMLElement {
   shadow: ShadowRoot;
   result: string;
+  resultURL: string;
+  choice: Move;
+  rivalChoice: Move;
   constructor() {
     super();
     this.shadow = this.attachShadow({ mode: "open" });
+    const { choice, rivalChoice } = state.getState();
+    this.choice = choice;
+    this.rivalChoice = rivalChoice;
   }
   connectedCallback() {
-    const { choice, rivalChoice } = state.getState();
-    this.result = state.whoWon(choice, rivalChoice);
+    this.result = state.whoWon(this.choice, this.rivalChoice);
     this.render();
   }
   addListener() {
-    const btnResultEl = this.shadow.querySelector(".result__btn");
+    const btnResultEl = this.shadow.querySelector(".layer__btn");
 
     btnResultEl.addEventListener("click", (e) => {
       e.preventDefault();
@@ -25,50 +35,118 @@ class Results extends HTMLElement {
     });
   }
   showResult() {
-    const resultEl = this.shadow.querySelector(".result");
+    const { history, fullName, rivalName } = state.getState();
+    this.resultURL = this.result == "Win" ? winSvg : this.result == "Lose" ? loseSvg : drawSvg;
 
-    resultEl.textContent = this.result;
+    const layerEl = document.createElement("div");
+
+    const plusMe = this.result == "Win" ? "plusMe" : "";
+    const plusRival = this.result == "Lose" ? "plusRival" : "";
+
+    layerEl.classList.add("layer", `${this.result}`);
+    layerEl.innerHTML = `
+      <div class="layer__cont-img">
+        <img class="cont-img__stateSvg" src="${this.resultURL}" alt="${this.result}">
+      </div> 
+
+      <div class="layer__cont-score">
+        <h3>Score</h3>
+        <h5>${fullName}: <span class="${plusMe}">${history.myScore}</span></h5>
+        <h5>${rivalName}: <span class="${plusRival}"> ${history.rivalScore}</span></h5>
+      </div>
+      
+      <my-button class="layer__btn">Volver a Jugar</my-button>`;
+
+    return layerEl;
   }
   render() {
     const style = document.createElement("style");
     style.innerHTML = `*{margin:0;padding:0;box-sizing: border-box;}
-    .newRoom {
-      padding: 1.5rem 1.5rem 0 1.5rem;
-      width: min-content;
+    .result {
+      /* box model */
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      align-items: center;
       height: 100vh;
+      width: 320px;
     }
-    .newRoom__cont-hand {
+    /* LAYER */
+    .layer {
+      /* box model */
       display: flex;
-      justify-content: space-between;
-      margin-top: 1rem;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      width: 100%;
+      /* visual */
+      animation: fadein 1s linear;
+      animation-fill-mode: forwards;
+      /* typography */
+      text-align: center;
+      /* positioning */
+      position: absolute;
     }
-    .result {
-      font-size: 3rem;
-      color: aqua;
-      margin: 3rem;
+    .cont-img__stateSvg {
+      /* box model */
+      height: 250px;
+      width: 250px;
     }
-      
-      `;
+    @keyframes fadein {
+      0% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+    .layer__cont-score {
+      /* box model */
+      margin: 1rem 0;
+      height: 217px;
+      width: 260px;
+      /* typography */
+      font-size: 45px;
+      font-family: var(--font-rubik);
+      /* visual */
+      border: solid 10px;
+      background-color: #fff;
+      border-radius: 5px;
+    }
+    .Win {
+      background-color: #6cb46cb0;
+    }
+    .Lose {
+      background-color: #dc5b49b0;
+    }
+    .Draw {
+      background-color: #828282b0;
+    }
+    .plusMe {
+      color: #6cb46cb0;
+    }
+    .plusRival {
+      color: #dc5b49b0;
+    }`;
 
-    this.shadow.innerHTML = `
-    <div class="newRoom">
-      <h1 class="result"></h1>
+    const divEl = document.createElement("div");
 
-      <my-button class="result__btn">¡Jugar!</my-button>
+    divEl.classList.add("result");
+    divEl.innerHTML = `
+    <my-hand style="transform: rotate(180deg);" tag="${this.rivalChoice}"></my-hand>
+    <my-hand tag="${this.choice}"></my-hand>`;
 
-      <div class="newRoom__cont-hand">
-        <my-hand tag="scissors"></my-hand>
-        <my-hand tag="rock"></my-hand>
-        <my-hand tag="paper"></my-hand>
-      </div>
-    </div>
-    `;
+    const itervalId = setInterval(() => {
+      clearInterval(itervalId);
 
-    this.showResult();
-    this.addListener();
+      const layerEl = this.showResult();
+      divEl.appendChild(layerEl);
+
+      this.addListener();
+    }, 1500);
+
+    this.shadow.appendChild(divEl);
     this.shadow.appendChild(style);
   }
 }

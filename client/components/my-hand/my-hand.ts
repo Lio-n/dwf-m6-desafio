@@ -30,9 +30,12 @@ export class Hand extends HTMLElement {
       cursor: pointer;
     }
     img {
+      /* box model */
       height: 7rem;
-    }
-    `;
+      /* positioning */
+      position: relative;
+      bottom: -4px;
+    }`;
 
     if (this.tag !== "") {
       this.shadow.innerHTML = `

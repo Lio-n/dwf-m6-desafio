@@ -26,12 +26,25 @@ export class Header extends HTMLElement {
       .header {
         display: flex;
         justify-content: space-between;
-        width: 100%;
+        width: 23rem;
         padding: 2rem 0;
-        border: solid 1px;
+        transition: all 0.2s ease-in-out;
       }
-      .owner {
-        margin: 0 0 1rem 0;
+      .header h2 {
+        font-weight: 400;
+      }
+      @media (min-width: 530px) {
+        .header {
+          width: 30rem;
+        }
+      }
+      @media (min-width: 600px) {
+        .header {
+          width: 35rem;
+        }
+      }
+      .guess {
+        color: #006CFC;
       }`;
 
     this.shadow.innerHTML = `
@@ -43,8 +56,8 @@ export class Header extends HTMLElement {
         </div>
 
         <div class="header__room">
-          <h3 class="room__title">SALA</h3>
-          <h2 class="room__id">${this.roomId}</h2>
+          <h2 class="room__title">SALA</h3>
+          <h2 class="room__id">${this.roomId}</h1>
         </div>
 
       </header>`;

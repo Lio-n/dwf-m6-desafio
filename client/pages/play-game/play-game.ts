@@ -18,6 +18,7 @@ class Play extends HTMLElement {
 
     for (const choice of myMove) {
       choice.addEventListener("change", (e: any) => {
+        choice.classList.add("selected");
         const myPlay = e.detail.myPlay as Move;
         state.setMove(myPlay);
         this.getMoves();
@@ -39,27 +40,62 @@ class Play extends HTMLElement {
 
     const style = document.createElement("style");
     style.innerHTML = `
+    .playGame {
+      /* box model */
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100vh;
+    }
     .playGame__countdown {
+      /* typography */
       font-size: 4rem;
+      /* visual */
       color: aqua;
     }
     .playGame__cont-hand {
+      /* box model */
       display: flex;
-      width: 100wh;
-      margin: 4rem 0;
       justify-content: space-between;
+      margin-top: 1rem;
+      width: 320px;
+      /* positioning */
+      position: relative;
+      transform: scale(1.5);
+      top: -30px;
     }
+    /* SELECT HAND */
     my-hand {
-      border: solid 2px aqua;
+      transition: all 0s ease-in-out;
+    }
+    my-hand.selected {
+      /* positioning */
+      position: relative;
+      transform: scaleY(1.5);
+      bottom: 29px;
+    }
+    .playGame__cont-countdown {
+      /* typograpy */
+      text-align: center;
+      font-size: 5rem;
+      /* visual */
+      color: aqua;
     }`;
+
     this.shadow.innerHTML = `
-      <h1 class="playGame__countdown">${count}</h1>
+    <div class="playGame">
+      
+      <div class="playGame__cont-countdown">
+        <h1 class="playGame__countdown">${count}</h1>
+      </div>
       
       <div class="playGame__cont-hand">
         <my-hand tag="scissors"></my-hand>
         <my-hand tag="rock"></my-hand>
         <my-hand tag="paper"></my-hand>
-      </div>`;
+      </div>
+    
+    </div>`;
 
     this.addListener();
 
@@ -85,7 +121,7 @@ class Play extends HTMLElement {
         Router.go("/results");
       }
 
-      count--;
+      // count--;
     }, 1000);
 
     this.shadow.appendChild(style);

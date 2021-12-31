@@ -27,19 +27,21 @@ class Home extends HTMLElement {
     const style = document.createElement("style");
     style.innerHTML = `*{margin:0;padding:0;box-sizing: border-box;}
     .home {
+      /* box model */
+      display: flex;
+      justify-content: space-between;
+      flex-direction: column;
       padding: 1.5rem 1.5rem 0 1.5rem;
       width: min-content;
+      height: 100vh;
     }
-    .home__title {
-      font-size: 3rem;
-      line-height: 6rem;
-      margin-bottom: 1.5rem;
-      color: var(--title);
+    @media (min-width:420px) {
+      .home {
+        padding-top: 1.5rem;
+      }
     }
-    .home__title span {
-      color: #91ccaf;
-    }
-    .home__cont-hand{
+    .home__cont-hand {
+      /* box model */
       display: flex;
       justify-content: space-between;
       margin-top: 1rem;
@@ -48,9 +50,12 @@ class Home extends HTMLElement {
     this.shadow.innerHTML = `
     <div class="home">
       
-      <h1 class="home__title">Piedra Papel <span>ó</span> Tijera</h1>
-      <my-button class="newRoom">Nuevo Juego</my-button>
-      <my-button class="joinRoom">Ingresar a la sala</my-button>
+      <my-text tag="h1"></my-text>
+      
+      <div class="home__cont-buttons">
+        <my-button class="newRoom">Nuevo Juego</my-button>
+        <my-button class="joinRoom">Ingresar a la sala</my-button>
+      </div>
 
       <div class="home__cont-hand">
         <my-hand tag="scissors"></my-hand>

@@ -2,6 +2,7 @@
 import "./components/my-button/my-button";
 import "./components/my-hand/my-hand";
 import "./components/my-header/my-header";
+import "./components/my-text/my-text";
 
 // ? PAGES
 import "./pages/home/home";

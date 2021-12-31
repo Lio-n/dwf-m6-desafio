@@ -1,7 +1,21 @@
+:root {
+  --title: #009048;
+  --font-rubik: "Rubik", sans-serif;
+}
+
 * {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-rubik);
 }
 
 body {
   background: linear-gradient(to bottom, hsl(214, 47%, 23%), rgb(20, 21, 57));
+  height: 100vh;
+}
+
+.root {
+  display: flex;
+  justify-content: center;
 }

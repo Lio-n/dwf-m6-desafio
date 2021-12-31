@@ -15,7 +15,7 @@ export class Button extends HTMLElement {
       max-width: 22rem;
       padding: 10px;
       min-width: 20rem;
-      margin-top: 2rem;
+      margin-top: 1.5rem;
       /* typography */
       letter-spacing: 1px;
       font-size: 2rem;
@@ -26,6 +26,14 @@ export class Button extends HTMLElement {
       color: #D8FCFC;
       background-color: #006CFC;
       border: 5px solid #001997;
+      opacity: 0.8;
+      transition: all 0.2s ease-in-out;
+      /* typography */
+      font-family: var(--font-rubik);
+    }
+    .btn:hover {
+      transform: scale(1.1);
+      opacity: 1;
     }`;
 
     this.shadow.innerHTML = `<button class="btn">${this.txt}</button>`;

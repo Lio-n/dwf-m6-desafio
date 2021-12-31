@@ -32,33 +32,23 @@ class NewRoom extends HTMLElement {
     const style = document.createElement("style");
     style.innerHTML = `*{margin:0;padding:0;box-sizing: border-box;}
     .newRoom {
-      padding: 1.5rem 1.5rem 0 1.5rem;
-      width: min-content;
+      /* box model */
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      padding: 1.5rem 1.5rem 0 1.5rem;
+      width: min-content;
       height: 100vh;
     }
-    .newRoom__title {
-      font-size: 3rem;
-      line-height: 6rem;
-      margin-bottom: 1.5rem;
-      color: var(--title);
-    }
-    .newRoom__title span {
-      color: #91ccaf;
-    }
     .newRoom__cont-hand{
-        display: flex;
-        justify-content: space-between;
-        margin-top: 1rem;
-      }
-    /* FORM */ 
-    .form{
-      text-align: center;
+      /* box model */
+      display: flex;
+      justify-content: space-between;
+      margin-top: 1rem;
     }
-    .form__subtitle{
-        margin: 5px;
+    /* FORM */ 
+    .form {
+      text-align: center;
     }
     /* BUTTON */
     .form__btn {
@@ -66,7 +56,7 @@ class NewRoom extends HTMLElement {
       max-width: 22rem;
       padding: 10px;
       min-width: 20rem;
-      margin-top: 2rem;
+      margin-top: 1.5rem;
       /* typography */
       letter-spacing: 1px;
       font-size: 2rem;
@@ -77,6 +67,14 @@ class NewRoom extends HTMLElement {
       color: #D8FCFC;
       background-color: #006CFC;
       border: 5px solid #001997;
+      opacity: 0.8;
+      transition: all 0.2s ease-in-out;
+      /* typography */
+      font-family: var(--font-rubik);
+    }
+    .form__btn:hover {
+      transform: scale(1.1);
+      opacity: 1;
     }
     /* INPUT */
     .form__input {
@@ -84,6 +82,7 @@ class NewRoom extends HTMLElement {
       border-radius: 10px;
       padding: 10px 10px 10px 20px;
       width: 20rem;
+      margin-top: 1.5rem;
       /* typography */
       letter-spacing: 1px;
       font-size: 2rem;
@@ -91,14 +90,14 @@ class NewRoom extends HTMLElement {
       /* visual */
       border: none;
       color: #666;
+      border: 5px solid #001997;
     }`;
 
     this.shadow.innerHTML = `
     <div class="newRoom">
-      <h1 class="newRoom__title">Piedra Papel <span>ó</span> Tijera</h1>
+      <my-text tag="h1"></my-text>
       
       <form class="form">
-        <h2 class="form__subtitle">Tu Nombre</h2>
         <input class="form__input" name="fullName" placeholder="Ingresar Nombre"/>
         <button class="form__btn">Entrar</button>
       </form>
