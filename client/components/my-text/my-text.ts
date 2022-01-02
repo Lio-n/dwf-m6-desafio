@@ -24,6 +24,7 @@ export class Text extends HTMLElement {
       color: #91ccaf;
     }
     .root__sub-title {
+      /* typography */
       font-size: 2rem;
       text-align: center;
       font-weight: 300;

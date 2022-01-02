@@ -16,6 +16,7 @@ export class Hand extends HTMLElement {
   listeners() {
     const handEl = this.shadow.querySelector(`.${this.tag}`);
     handEl.addEventListener("click", (e: any) => {
+      e.preventDefault();
       const event = new CustomEvent("change", {
         detail: { myPlay: this.tag },
       });

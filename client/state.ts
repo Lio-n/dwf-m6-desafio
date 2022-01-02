@@ -5,7 +5,7 @@ const API_BASE_URL = "http://localhost:3000";
 let i = 0;
 
 type Property = "online" | "ready";
-type Move = "rock" | "paper" | "scissors";
+type Move = "rock" | "paper" | "scissors" | "null";
 type Result = "Draw" | "Win" | "Lose";
 type Game = {
   myScore: Number;
@@ -15,12 +15,12 @@ type Game = {
 const state = {
   data: {
     fullName: "",
-    choice: "none",
+    choice: "null",
     roomId: "",
     rtdbRoomId: "",
     player: "", // # Si es Player1 ó Player2
     rivalName: "",
-    rivalChoice: "none",
+    rivalChoice: "null",
     // # Save results
     history: {
       myScore: 0,
@@ -29,18 +29,24 @@ const state = {
   },
 
   listeners: [],
-  init() {},
+  init() {
+    // Get the local data
+    const localData = JSON.parse(localStorage.getItem("saved-state"));
+    // If localdata retuns "null", do nothing
+    if (!localData) {
+      return;
+    } else {
+      this.setState(localData);
+    }
+  },
 
   getState() {
     return this.data;
   },
 
   // # CREATE USER
-  createUser(fullName: string) {
-    this.setState({
-      ...this.getState(),
-      fullName,
-    });
+  createUser(callback?) {
+    const { fullName } = this.getState();
 
     return fetch(`${API_BASE_URL}/signup`, {
       method: "post",
@@ -50,11 +56,18 @@ const state = {
       body: JSON.stringify({
         fullName,
       }),
+    }).then((res) => {
+      if (res.status == 400) {
+        return callback(true);
+      }
+      return callback();
     });
   },
 
   // # CREATE ROOM
-  createRoom(fullName: string) {
+  createRoom() {
+    const { fullName } = this.getState();
+
     return fetch(`${API_BASE_URL}/rooms`, {
       method: "post",
       headers: {
@@ -72,7 +85,6 @@ const state = {
 
         this.setState({
           ...this.getState(),
-          fullName,
           roomId,
           rtdbRoomId,
           player,
@@ -81,16 +93,47 @@ const state = {
   },
 
   // # CHECK THE ROOM ID [RTDBROOMID]
-  checkRoomId(roomId: string) {
+  checkRoomId(callback?) {
+    const { roomId } = this.getState();
+
     return fetch(`${API_BASE_URL}/rooms/${roomId}`)
-      .then((res) => res.json())
+      .then((res) => {
+        if (res.status == 404) {
+          return callback(true);
+        }
+        return res.json();
+      })
       .then((data) => {
         const { rtdbRoomId } = data;
-        state.setState({
+        this.setState({
           ...this.getState(),
-          roomId,
           rtdbRoomId,
         });
+        return callback();
+      });
+  },
+
+  // # ACCESS TO ROOM
+  accessToRoom(callback?) {
+    const { rtdbRoomId, fullName } = this.getState();
+
+    return fetch(`${API_BASE_URL}/rooms/${rtdbRoomId}/player/${fullName}`)
+      .then((res) => {
+        if (res.status == 404) {
+          return callback(true);
+        }
+        return res.json();
+      })
+      .then((data) => {
+        const { player, fullName, myScore } = data;
+
+        this.setState({
+          ...this.getState(),
+          player,
+          fullName,
+          myScore,
+        });
+        return callback();
       });
   },
 
@@ -100,7 +143,6 @@ const state = {
 
     rtdb.ref(`/rooms/${rtdbRoomId}`).on("value", (snap) => {
       const { player1, player2 } = snap.val();
-      console.log("LISTENER PROPERTY", snap.val());
 
       if (property.includes("online") && player1.online && player2.online) {
         Router.go("/instruction");
@@ -129,7 +171,7 @@ const state = {
   },
 
   // # UPDATE THE PLAYER2 FULLNAME
-  updateRivalFullName(callback?) {
+  updateRivalFullName() {
     const { rtdbRoomId, fullName } = this.getState();
     this.setState({ ...this.getState(), player: "player2" });
 
@@ -139,7 +181,6 @@ const state = {
         "content-type": "application/json",
       },
     });
-    callback();
   },
 
   // # GET CURRENT RIVAL INFO
@@ -163,6 +204,22 @@ const state = {
       });
   },
 
+  // # GET RIVAL CHOICE
+  getRivalChoice() {
+    const { rtdbRoomId, player } = this.getState();
+
+    rtdb.ref(`/rooms/${rtdbRoomId}`).on("value", (snap) => {
+      const { player1, player2 } = snap.val();
+
+      const rivalPlayer = player == "player1" ? player2 : player1;
+      const emptyChoice: boolean = player1.choice !== "null" && player2.choice !== "null";
+
+      if (emptyChoice) {
+        this.setState({ ...this.getState(), rivalChoice: rivalPlayer.choice });
+      }
+    });
+  },
+
   // # SAVE THE CHOICE IN THE REAL TIME DATABASE
   setMove(myPlay: Move) {
     const { player, rtdbRoomId } = this.getState();
@@ -177,18 +234,6 @@ const state = {
         player,
         myPlay,
       }),
-    });
-  },
-
-  // # GET RIVAL CHOICE
-  getRivalChoice() {
-    const { rtdbRoomId, player } = this.getState();
-    const rivalPlayer: string = player.includes("player1") ? "player2" : "player1";
-
-    rtdb.ref(`/rooms/${rtdbRoomId}/${rivalPlayer}`).on("value", (snap) => {
-      const { choice } = snap.val();
-
-      this.setState({ ...this.getState(), rivalChoice: choice });
     });
   },
 
@@ -244,7 +289,7 @@ const state = {
     for (const cb of this.listeners) {
       cb();
     }
-    // localStorage.setItem("save-state", JSON.stringify(newState));
+    localStorage.setItem("saved-state", JSON.stringify(newState));
 
     console.log("soy el state, he cambiado", i++, this.data);
   },

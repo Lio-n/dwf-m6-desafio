@@ -16,3 +16,8 @@ import "./pages/results/results";
 
 // ? SOMETHING ELSE
 import "./routes";
+import { state } from "./state";
+
+(() => {
+  state.init();
+})();

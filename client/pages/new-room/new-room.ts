@@ -12,20 +12,35 @@ class NewRoom extends HTMLElement {
   }
   addListener() {
     const formEl = this.shadow.querySelector(".form");
+    const inputFullName = formEl["fullName"];
+    const alertName = formEl.querySelector(".form__warning-name");
 
     formEl.addEventListener("submit", (e) => {
       e.preventDefault();
       const { fullName } = e.target as any;
 
-      // * Create User
-      state.createUser(fullName.value).then(() => {
-        // * Create Room
-        state.createRoom(fullName.value).then(() => {
-          // * Set Online
-          state.updateProperty("online", true);
-          Router.go("/share_code");
+      if (fullName.value == "") {
+        inputFullName.style.border = "3px solid #e60026";
+      } else {
+        inputFullName.style.removeProperty("border");
+
+        state.setState({ ...state.getState(), fullName: fullName.value });
+        // * Create User
+        state.createUser((err) => {
+          if (err) {
+            // ! User Already Created
+            alertName.classList.add("open");
+          } else {
+            alertName.classList.remove("open");
+            // * Create Room
+            state.createRoom().then(() => {
+              // * Set Online
+              state.updateProperty("online", true);
+              Router.go("/share_code");
+            });
+          }
         });
-      });
+      }
     });
   }
   render() {
@@ -91,6 +106,14 @@ class NewRoom extends HTMLElement {
       border: none;
       color: #666;
       border: 5px solid #001997;
+    }
+    .form__warning-name {
+      display: none;
+      margin-top: 5px;
+      color: hsl(0, 93%, 68%);
+    }
+    .open {
+      display: initial;
     }`;
 
     this.shadow.innerHTML = `
@@ -99,6 +122,8 @@ class NewRoom extends HTMLElement {
       
       <form class="form">
         <input class="form__input" name="fullName" placeholder="Ingresar Nombre"/>
+        <h4 class="form__warning-name">User Already Created</h4>
+
         <button class="form__btn">Entrar</button>
       </form>
       

@@ -11,6 +11,9 @@ class Play extends HTMLElement {
     this.shadow = this.attachShadow({ mode: "open" });
   }
   connectedCallback() {
+    // * Reset values
+    state.setState({ ...state.getState(), rivalChoice: "null" });
+    state.setMove("null");
     this.render();
   }
   addListener() {
@@ -19,21 +22,10 @@ class Play extends HTMLElement {
     for (const choice of myMove) {
       choice.addEventListener("change", (e: any) => {
         choice.classList.add("selected");
-        const myPlay = e.detail.myPlay as Move;
+        const myPlay = e.detail.myPlay;
         state.setMove(myPlay);
-        this.getMoves();
       });
     }
-  }
-  getMoves() {
-    state.getRivalChoice();
-
-    state.subscribe(() => {
-      const { choice, rivalChoice } = state.getState();
-      if ((choice && rivalChoice) as Move) {
-        this.isSelected = true;
-      }
-    });
   }
   render() {
     let count = 3;
@@ -98,6 +90,7 @@ class Play extends HTMLElement {
     </div>`;
 
     this.addListener();
+    state.getRivalChoice();
 
     const countDown = this.shadow.querySelector(".playGame__countdown");
 
@@ -105,6 +98,11 @@ class Play extends HTMLElement {
     // & Set time 3s
     const intervalId = setInterval(() => {
       countDown.textContent = `${count}`;
+
+      const { choice, rivalChoice } = state.getState();
+      if (choice !== "null" && rivalChoice !== "null") {
+        this.isSelected = true;
+      }
 
       // & If I don't select any of the three options.
       // & It stops counting and redirects to "/instruction".
@@ -121,7 +119,7 @@ class Play extends HTMLElement {
         Router.go("/results");
       }
 
-      // count--;
+      count--;
     }, 1000);
 
     this.shadow.appendChild(style);

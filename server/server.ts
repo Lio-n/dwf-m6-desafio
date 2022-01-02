@@ -17,18 +17,24 @@ const usersColl = firestore.collection("users");
 app.post("/signup", (req, res) => {
   const { fullName } = req.body;
   usersColl
-    .where("userName", "==", fullName)
+    .where("fullName", "==", fullName)
     .get()
-    .then(() => {
-      usersColl
-        .add({
-          fullName,
-        })
-        .then((newUserRef) => {
-          res.json({
-            userId: newUserRef.id,
+    .then((searchRes) => {
+      if (searchRes.empty) {
+        usersColl
+          .add({
+            fullName,
+          })
+          .then(() => {
+            res.status(201).json({
+              message: "User Created",
+            });
           });
+      } else {
+        res.status(400).json({
+          message: "User Already exists",
         });
+      }
     });
 });
 
@@ -43,14 +49,14 @@ app.post("/rooms", (req, res) => {
         fullName,
         online: false,
         ready: false,
-        choice: "",
+        choice: "null",
         score: 0,
       },
       player2: {
-        fullName: "",
+        fullName: "null",
         online: false,
         ready: false,
-        choice: "",
+        choice: "null",
         score: 0,
       },
     })
@@ -63,7 +69,7 @@ app.post("/rooms", (req, res) => {
           rtdbRoomId: roomLongId,
         })
         .then(() => {
-          res.json({
+          res.status(201).json({
             player: "player1",
             roomId: roomId,
             rtdbRoomId: roomLongId,
@@ -79,14 +85,53 @@ app.get("/rooms/:roomId", (req, res) => {
     .doc(roomId.toString())
     .get()
     .then((doc) => {
-      return res.status(200).json({
-        rtdbRoomId: doc.get("rtdbRoomId"),
-      });
+      if (doc.exists) {
+        return res.status(200).json({
+          rtdbRoomId: doc.get("rtdbRoomId"),
+        });
+      } else {
+        return res.status(404).json({
+          message: "Room not found",
+        });
+      }
     });
 });
 
+// $ SAVE THE SCORE IN THE REAL TIME DATABASE
+// & Path : "/rooms/${rtdbRoomId}/player/:${fullName}"
+app.get("/rooms/:rtdbRoomId/player/:fullName", (req, res) => {
+  const { rtdbRoomId, fullName } = req.params;
+
+  rtdb
+    .ref(`/rooms/${rtdbRoomId}`)
+    .get()
+    .then((snap) => {
+      const { player1, player2 } = snap.val();
+
+      if (player1.fullName == fullName) {
+        res.status(201).json({
+          player: "player1",
+          fullName,
+          myScore: player1.score,
+        });
+      } else if (player2.fullName == fullName) {
+        res.status(201).json({
+          player: "player2",
+          fullName,
+          myScore: player2.score,
+        });
+      } else {
+        res.status(404).json({
+          message: "User Not Found",
+        });
+      }
+    });
+
+  res.json("Todo Ok");
+});
+
 // $ UPDATE THE PLAYER2 FULLNAME
-// & Path : "/rooms/:rtdbRoomId/player2/?fullName=${fullName}"
+// & Path : "/rooms/${rtdbRoomId}/player2/?fullName=${fullName}"
 app.put("/rooms/:rtdbRoomId/player2", (req, res) => {
   const { rtdbRoomId } = req.params;
   const { fullName } = req.query;

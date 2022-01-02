@@ -114,6 +114,12 @@ class Results extends HTMLElement {
       background-color: #fff;
       border-radius: 5px;
     }
+    .layer__cont-score h5 {
+      font-weight: 400;
+    }
+    .layer__cont-score h3 {
+      font-weight: 400;
+    }
     .Win {
       background-color: #6cb46cb0;
     }
@@ -128,14 +134,24 @@ class Results extends HTMLElement {
     }
     .plusRival {
       color: #dc5b49b0;
+    }
+    .myChoice {
+      transform: scale(1.5);
+      bottom: 30px;
+      position: relative;
+    }
+    .rivalChoice {
+      transform: scale(1.5) rotate(180deg);
+      position: relative;
+      top: 30px;
     }`;
 
     const divEl = document.createElement("div");
 
     divEl.classList.add("result");
     divEl.innerHTML = `
-    <my-hand style="transform: rotate(180deg);" tag="${this.rivalChoice}"></my-hand>
-    <my-hand tag="${this.choice}"></my-hand>`;
+    <my-hand class="rivalChoice" tag="${this.rivalChoice}"></my-hand>
+    <my-hand class="myChoice" tag="${this.choice}"></my-hand>`;
 
     const itervalId = setInterval(() => {
       clearInterval(itervalId);

@@ -10,6 +10,8 @@ export class ShareCode extends HTMLElement {
   connectedCallback() {
     this.roomId = state.getState().roomId;
     this.render();
+    // * Varifica si ambos jugadores tiene 'online:true'.
+    // * Si, es así los redirige a '/instruction'
     state.listenProperty("online");
   }
   render() {
