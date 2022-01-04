@@ -10,7 +10,14 @@ export class Hand extends HTMLElement {
     super();
     this.shadow = this.attachShadow({ mode: "open" });
     this.tag = this.getAttribute("tag") || "";
-    this.handURL = this.tag == "rock" ? rock : this.tag == "paper" ? paper : scissors;
+    this.handURL =
+      this.tag == "rock"
+        ? rock
+        : this.tag == "scissors"
+        ? scissors
+        : this.tag == "paper"
+        ? paper
+        : "";
     this.render();
   }
   listeners() {

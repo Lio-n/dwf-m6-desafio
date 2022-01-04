@@ -11,9 +11,12 @@ class Instruction extends HTMLElement {
     // * Seteo 'online:false', así no tengo problemas con el listenOnline
     // * El cual siempre se que "escuchando" cada actualizacion en la 'Real Time Database'.
     state.updateProperty("online", false);
-
-    state.getRivalInfo(() => {
-      this.render();
+    // * Reset values
+    state.setState({ ...state.getState(), rivalChoice: "null" });
+    state.setMove("null").then(() => {
+      state.getRivalInfo(() => {
+        this.render();
+      });
     });
   }
   addListener() {

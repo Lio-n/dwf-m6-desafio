@@ -49,6 +49,7 @@ app.post("/rooms", (req, res) => {
         fullName,
         online: false,
         ready: false,
+        disconnected: false,
         choice: "null",
         score: 0,
       },
@@ -56,6 +57,7 @@ app.post("/rooms", (req, res) => {
         fullName: "null",
         online: false,
         ready: false,
+        disconnected: false,
         choice: "null",
         score: 0,
       },
@@ -79,6 +81,7 @@ app.post("/rooms", (req, res) => {
 });
 
 // $ CHECKS IF A ROOM EXISTS
+// & Path : "/rooms/${roomId}"
 app.get("/rooms/:roomId", (req, res) => {
   const { roomId } = req.params;
   roomsColl
@@ -90,14 +93,14 @@ app.get("/rooms/:roomId", (req, res) => {
           rtdbRoomId: doc.get("rtdbRoomId"),
         });
       } else {
-        return res.status(404).json({
+        return res.status(400).json({
           message: "Room not found",
         });
       }
     });
 });
 
-// $ SAVE THE SCORE IN THE REAL TIME DATABASE
+// $ GET USER DATA
 // & Path : "/rooms/${rtdbRoomId}/player/:${fullName}"
 app.get("/rooms/:rtdbRoomId/player/:fullName", (req, res) => {
   const { rtdbRoomId, fullName } = req.params;
@@ -109,25 +112,31 @@ app.get("/rooms/:rtdbRoomId/player/:fullName", (req, res) => {
       const { player1, player2 } = snap.val();
 
       if (player1.fullName == fullName) {
-        res.status(201).json({
+        res.status(200).json({
           player: "player1",
-          fullName,
-          myScore: player1.score,
+          fullName: player1.fullName,
+          rivalName: player2.fullName,
+          history: {
+            myScore: player1.score,
+            rivalScore: player2.score,
+          },
         });
       } else if (player2.fullName == fullName) {
-        res.status(201).json({
+        res.status(200).json({
           player: "player2",
-          fullName,
-          myScore: player2.score,
+          fullName: player2.fullName,
+          rivalName: player1.fullName,
+          history: {
+            myScore: player2.score,
+            rivalScore: player1.score,
+          },
         });
       } else {
-        res.status(404).json({
+        res.status(400).json({
           message: "User Not Found",
         });
       }
     });
-
-  res.json("Todo Ok");
 });
 
 // $ UPDATE THE PLAYER2 FULLNAME
@@ -147,12 +156,12 @@ app.put("/rooms/:rtdbRoomId/player", (req, res) => {
   const { player, property, value } = req.body;
 
   if (property == "online") {
-    rtdb.ref(`/rooms/${rtdbRoomId}/${player}`).update({ online: value });
+    rtdb.ref(`/rooms/${rtdbRoomId}/${player}`).update({ online: value, disconnected: false });
   }
   if (property == "ready") {
     rtdb.ref(`/rooms/${rtdbRoomId}/${player}`).update({ ready: value });
   }
-  res.json("Todo Ok");
+  res.status(200).json("Todo Ok");
 });
 
 // $ GET CURRENT RIVAL INFO
@@ -167,7 +176,7 @@ app.get("/rooms/:rtdbRoomId/rival_player", (req, res) => {
     res.json({
       rivalName: player == "player1" ? player2.fullName : player1.fullName,
       rivalScore: player == "player1" ? player2.score : player1.score,
-      score: player == "player1" ? player1.score : player2.score,
+      myScore: player == "player1" ? player1.score : player2.score,
     });
   });
 });
@@ -180,7 +189,7 @@ app.put("/rooms/:rtdbRoomId/player/choice", (req, res) => {
 
   rtdb.ref(`/rooms/${rtdbRoomId}/${player}`).update({ choice: myPlay });
 
-  res.json("Todo Ok");
+  res.status(200).json("Todo Ok");
 });
 
 // $ SAVE THE SCORE IN THE REAL TIME DATABASE
@@ -191,7 +200,7 @@ app.put("/rooms/:rtdbRoomId/player/score", (req, res) => {
 
   rtdb.ref(`/rooms/${rtdbRoomId}/${player}`).update({ score: myScore });
 
-  res.json("Todo Ok");
+  res.status(200).json("Todo Ok");
 });
 
 app.listen(PORT, () => {

@@ -1,6 +1,5 @@
 import { Router } from "@vaadin/router";
 import { state } from "../../state";
-type Move = "rock" | "paper" | "scissors";
 
 class Play extends HTMLElement {
   shadow: ShadowRoot;
@@ -11,9 +10,6 @@ class Play extends HTMLElement {
     this.shadow = this.attachShadow({ mode: "open" });
   }
   connectedCallback() {
-    // * Reset values
-    state.setState({ ...state.getState(), rivalChoice: "null" });
-    state.setMove("null");
     this.render();
   }
   addListener() {
@@ -123,6 +119,11 @@ class Play extends HTMLElement {
     }, 1000);
 
     this.shadow.appendChild(style);
+
+    // ! Player Disconnected
+    window.onbeforeunload = function playerDisconnected() {
+      state.playerDisconnected();
+    };
   }
 }
 customElements.define("play-game-page", Play);

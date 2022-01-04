@@ -10,4 +10,11 @@ router.setRoutes([
   { path: "/wait", component: "wait-page" },
   { path: "/play_game", component: "play-game-page" },
   { path: "/results", component: "results-page" },
+  {
+    path: "/error",
+    children: [
+      { path: "/user_disconnected", component: "disconnected-page" },
+      { path: "/full_room", component: "full-room-page" },
+    ],
+  },
 ]);

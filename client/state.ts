@@ -119,36 +119,59 @@ const state = {
 
     return fetch(`${API_BASE_URL}/rooms/${rtdbRoomId}/player/${fullName}`)
       .then((res) => {
-        if (res.status == 404) {
+        if (res.status == 400) {
           return callback(true);
         }
         return res.json();
       })
       .then((data) => {
-        const { player, fullName, myScore } = data;
+        const { player, fullName, rivalName, history } = data;
 
         this.setState({
           ...this.getState(),
           player,
           fullName,
-          myScore,
+          rivalName,
+          history,
         });
         return callback();
       });
   },
 
+  checkFullRoom(callback?) {
+    const { rtdbRoomId } = this.getState();
+
+    rtdb
+      .ref(`/rooms/${rtdbRoomId}`)
+      .get()
+      .then((snap) => {
+        const { player2 } = snap.val();
+
+        if (player2.fullName == "null") {
+          return callback();
+        } else {
+          return callback(true);
+        }
+      });
+  },
+
   // # CHECK IF BOTH PLAYERS HAVE READY:TRUE OR ONLINE:TRUE
   listenProperty(property: Property) {
-    const { rtdbRoomId } = this.getState();
+    const { rtdbRoomId, player } = this.getState();
 
     rtdb.ref(`/rooms/${rtdbRoomId}`).on("value", (snap) => {
       const { player1, player2 } = snap.val();
+      const rivalPlayer = player == "player1" ? player2 : player1;
 
       if (property.includes("online") && player1.online && player2.online) {
         Router.go("/instruction");
       }
       if (property.includes("ready") && player1.ready && player2.ready) {
         Router.go("/play_game");
+      }
+
+      if (rivalPlayer.disconnected == true) {
+        Router.go("/error/user_disconnected");
       }
     });
   },
@@ -183,6 +206,13 @@ const state = {
     });
   },
 
+  // # PlAYER DISCONNECTED
+  playerDisconnected() {
+    const { player, rtdbRoomId } = this.getState();
+
+    rtdb.ref(`/rooms/${rtdbRoomId}/${player}/`).update({ disconnected: true });
+  },
+
   // # GET CURRENT RIVAL INFO
   getRivalInfo(callback?) {
     const { rtdbRoomId, player } = this.getState();
@@ -197,9 +227,9 @@ const state = {
         return res.json();
       })
       .then((data) => {
-        const { rivalName, score, rivalScore } = data;
+        const { rivalName, myScore, rivalScore } = data;
 
-        this.setState({ ...this.getState(), rivalName, score, rivalScore });
+        this.setState({ ...this.getState(), rivalName, history: { myScore, rivalScore } });
         callback();
       });
   },
@@ -291,7 +321,7 @@ const state = {
     }
     localStorage.setItem("saved-state", JSON.stringify(newState));
 
-    console.log("soy el state, he cambiado", i++, this.data);
+    // console.log("soy el state, he cambiado", i++, this.data);
   },
 
   subscribe(callback: (any) => any) {

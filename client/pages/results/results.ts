@@ -164,6 +164,11 @@ class Results extends HTMLElement {
 
     this.shadow.appendChild(divEl);
     this.shadow.appendChild(style);
+
+    // ! Player Disconnected
+    window.onbeforeunload = function playerDisconnected() {
+      state.playerDisconnected();
+    };
   }
 }
 

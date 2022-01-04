@@ -13,6 +13,8 @@ import "./pages/instruction/instruction";
 import "./pages/wait/wait";
 import "./pages/play-game/play-game";
 import "./pages/results/results";
+import "./pages/error/full-room";
+import "./pages/error/user-disconnected";
 
 // ? SOMETHING ELSE
 import "./routes";

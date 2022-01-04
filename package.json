@@ -23,6 +23,5 @@
     "test": "ava",
     "build": "npm run build:front && npm run build:api",
     "start": "node ./server/index.js"
-  },
-  "main": "index.js"
+  }
 }

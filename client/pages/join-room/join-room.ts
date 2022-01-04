@@ -46,7 +46,7 @@ class JoinRoom extends HTMLElement {
                 state.accessToRoom((err) => {
                   if (err) {
                     // ! fullname is not linked to the roomId
-                    console.error("ERROR fullname is not linked to the roomId");
+                    Router.go("/error/full_room");
                   } else {
                     alertName.classList.remove("open");
                     // * Set Online
@@ -57,11 +57,17 @@ class JoinRoom extends HTMLElement {
               } else {
                 // ! If user Not Exists
                 alertName.classList.remove("open");
-                // * Connect
-                state.updateRivalFullName();
-                // * Set Online
-                state.updateProperty("online", true);
-                Router.go("/instruction");
+                state.checkFullRoom((err) => {
+                  if (err) {
+                    Router.go("/error/full_room");
+                  } else {
+                    // * Connect
+                    state.updateRivalFullName();
+                    // * Set Online
+                    state.updateProperty("online", true);
+                    Router.go("/instruction");
+                  }
+                });
               }
             });
           }
@@ -161,6 +167,7 @@ class JoinRoom extends HTMLElement {
         <my-hand tag="rock"></my-hand>
         <my-hand tag="paper"></my-hand>
       </div>
+
     </div>
     `;
 

@@ -10,11 +10,11 @@ export class Header extends HTMLElement {
   constructor() {
     super();
     this.shadow = this.attachShadow({ mode: "open" });
-    const { fullName, rivalName, score, rivalScore, roomId } = state.getState();
+    const { fullName, rivalName, history, roomId } = state.getState();
     this.fullName = fullName;
-    this.score = score;
+    this.score = history.myScore;
     this.rivalName = rivalName;
-    this.rivalScore = rivalScore;
+    this.rivalScore = history.rivalScore;
     this.roomId = roomId;
 
     this.render();

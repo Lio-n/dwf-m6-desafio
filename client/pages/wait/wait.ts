@@ -69,6 +69,11 @@ class WaitPage extends HTMLElement {
     </div>`;
 
     this.shadow.appendChild(style);
+
+    // ! Player Disconnected
+    window.onbeforeunload = function playerDisconnected() {
+      state.playerDisconnected();
+    };
   }
 }
 customElements.define("wait-page", WaitPage);
