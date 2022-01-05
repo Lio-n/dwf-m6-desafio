@@ -8,7 +8,7 @@ app.use(express.json());
 app.use(express.static("dist"));
 app.use(cors());
 
-const PORT = process.env.PORT || 3000;
+const port = process.env.PORT || 3000;
 
 const roomsColl = firestore.collection("rooms");
 const usersColl = firestore.collection("users");
@@ -207,6 +207,6 @@ app.get("*", (req, res) => {
   res.sendFile(__dirname + "/dist/index.html");
 });
 
-app.listen(PORT, () => {
-  console.log(`Server listen on port ${PORT}`);
+app.listen(port, () => {
+  console.log(`Server listen on port ${port}`);
 });
