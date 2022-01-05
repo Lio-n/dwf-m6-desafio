@@ -20,7 +20,7 @@
     "build:front": "parcel build ./client/index.html",
     "dev": "nodemon --watch './server/server.ts' --exec 'ts-node dev.ts'",
     "build:api": "tsc ./dev.ts",
-    "build": "npm run build:front && npm run build:api",
+    "build": "yarn build:front && yarn build:api",
     "start": "node ./dev.js"
   }
 }
