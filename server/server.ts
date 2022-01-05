@@ -5,10 +5,10 @@ import { nanoid } from "nanoid";
 
 const app = express();
 app.use(express.json());
-// app.use(express.static("dist"));
+app.use(express.static("dist"));
 app.use(cors());
 
-const PORT = 3000;
+const PORT = process.env.PORT;
 
 const roomsColl = firestore.collection("rooms");
 const usersColl = firestore.collection("users");
@@ -201,6 +201,10 @@ app.put("/rooms/:rtdbRoomId/player/score", (req, res) => {
   rtdb.ref(`/rooms/${rtdbRoomId}/${player}`).update({ score: myScore });
 
   res.status(200).json("Todo Ok");
+});
+
+app.get("*", (req, res) => {
+  res.sendFile(__dirname + "/dist/index.html");
 });
 
 app.listen(PORT, () => {

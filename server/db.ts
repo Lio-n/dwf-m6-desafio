@@ -1,9 +1,12 @@
 import * as admin from "firebase-admin"; // Libreria
-// import * as serviceAccount from "./key.json"; // Key
-const serviceAccount = require("./key.json");
+require("dotenv").config();
 
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount as any), // Autentifico con mi key "serviceAccount"
+  credential: admin.credential.cert({
+    projectId: process.env.FIREBASE_PROJECT_ID,
+    privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n"),
+    clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+  }), // Me Autentifico
   databaseURL: "https://apx-m6-desafio-default-rtdb.firebaseio.com/", // Direccion de mi Proyecto "apx-dwf-m6"
 });
 

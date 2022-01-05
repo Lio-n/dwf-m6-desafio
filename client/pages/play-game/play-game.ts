@@ -24,7 +24,7 @@ class Play extends HTMLElement {
     }
   }
   render() {
-    let count = 3;
+    let count = 2;
 
     const style = document.createElement("style");
     style.innerHTML = `
@@ -33,24 +33,29 @@ class Play extends HTMLElement {
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      width: min-content;
       height: 100vh;
     }
     .playGame__countdown {
       /* typography */
-      font-size: 4rem;
+      font-size: 11rem;
       /* visual */
-      color: aqua;
+      color: #006CFC;
     }
     .playGame__cont-hand {
       /* box model */
       display: flex;
-      justify-content: space-between;
+      gap: 20px;
       margin-top: 1rem;
-      width: 320px;
       /* positioning */
       position: relative;
       transform: scale(1.5);
       top: -30px;
+    }
+    @media (min-width: 530px) {
+      .playGame__cont-hand {
+        gap: 50px;
+      }
     }
     /* SELECT HAND */
     my-hand {
@@ -68,6 +73,18 @@ class Play extends HTMLElement {
       font-size: 5rem;
       /* visual */
       color: aqua;
+    }
+    .playGame__countdown {
+      font-size: 10rem;
+      animation: timer 1s infinite ease-in-out;
+    }
+    @keyframes timer {
+      to {
+        transform: scale(1.5);
+      }
+      from{
+        transform: scale(1);
+      }
     }`;
 
     this.shadow.innerHTML = `

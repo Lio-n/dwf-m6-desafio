@@ -31,7 +31,7 @@ export class Button extends HTMLElement {
       /* typography */
       font-family: var(--font-rubik);
     }
-    .btn:hover {
+    .btn:hover, .btn:active {
       transform: scale(1.1);
       opacity: 1;
     }`;
