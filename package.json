@@ -19,8 +19,8 @@
     "dev:front": "parcel serve ./client/index.html",
     "build:front": "parcel build ./client/index.html",
     "dev": "nodemon --watch './server/server.ts' --exec 'ts-node dev.ts'",
-    "build:api": "tsc ./server/server.ts",
+    "build:api": "tsc ./dev.ts",
     "build": "npm run build:front && npm run build:api",
-    "start": "node ./server/server.js"
+    "start": "node ./dev.js"
   }
 }
