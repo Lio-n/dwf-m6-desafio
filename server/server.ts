@@ -8,7 +8,7 @@ app.use(express.json());
 app.use(express.static("dist"));
 app.use(cors());
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3000;
 
 const roomsColl = firestore.collection("rooms");
 const usersColl = firestore.collection("users");
