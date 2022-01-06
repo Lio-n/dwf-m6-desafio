@@ -2,7 +2,7 @@
   "name": "df",
   "version": "1.0.0",
   "license": "MIT",
-  "devDependencies": {
+  "dependencies": {
     "@types/node": "^16.11.4",
     "@vaadin/router": "^1.7.4",
     "cors": "^2.8.5",
