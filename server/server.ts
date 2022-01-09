@@ -1,12 +1,13 @@
 import { firestore, rtdb } from "./db";
 import * as express from "express";
 import * as cors from "cors";
+import * as path from "path";
 import { nanoid } from "nanoid";
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 app.use(express.static("dist"));
-app.use(cors());
 
 const port = process.env.PORT || 3000;
 
@@ -204,7 +205,7 @@ app.put("/rooms/:rtdbRoomId/player/score", (req, res) => {
 });
 
 app.get("*", (req, res) => {
-  res.sendFile(__dirname + "/dist/index.html");
+  res.sendFile(path.join(__dirname, "../dist/index.html"));
 });
 
 app.listen(port, () => {

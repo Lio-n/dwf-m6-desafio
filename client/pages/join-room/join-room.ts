@@ -28,7 +28,7 @@ class JoinRoom extends HTMLElement {
         ? (inputRoomId.style.border = "3px solid #e60026")
         : inputRoomId.style.removeProperty("border");
 
-      if ((fullName.value && roomId.value) !== "") {
+      if (fullName.value !== "" && roomId.value !== "") {
         state.setState({ ...state.getState(), fullName: fullName.value, roomId: roomId.value });
 
         // * Check
